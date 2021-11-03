@@ -134,6 +134,22 @@ MHWs_Trend$pval <- cut(MHWs_Trend$p, breaks = c(0, 0.001, 0.01, 0.05, 1))
 saveRDS(MHWs_Trend, file = "data/MHWs_nTrend.Rds") # Mexican Pacific SST trends
 
 
+# Extracting the sst for the study area of the rocky reefs ----------------
+
+
+sst_data <-OISST_data %>% 
+            filter(between(lon, -111.3, -109.4)) %>% 
+            filter(between(lat, 22.8, 26.2)) 
+
+sst_data_sf <- st_as_sf(sst_data, coords = c("lon", 'lat'), crs = 4326, remove = F)
+
+st_area <- read_sf("shp/study_area.shp")
+
+results <- st_intersection(sst_data_sf, st_area) %>% 
+            as.data.frame() %>% 
+            select(-geometry)
+
+write_fst(results, "data/sst_extract_in_the_study_area.fst")
 
 # End of script -----------------------------------------------------------
 
